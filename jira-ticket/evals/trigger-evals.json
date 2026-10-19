@@ -1,0 +1,22 @@
+[
+  {"query": "can you write up a jira ticket for the retry bug we found in billing-worker? RetryPolicy swallows InterruptedException so the worker never shuts down cleanly. epic is PROJ-10", "should_trigger": true},
+  {"query": "break the reservation expiry tech brief (it's at docs/briefs/reservation-ttl.md) into tickets under PROJ-400. two milestones, M1 is storage+sweeper, M2 is extension and backfill", "should_trigger": true},
+  {"query": "ok I've got 6 dep bumps from the audit, make tickets for items 2, 4 and 5. put them in the current sprint and assign to me", "should_trigger": true},
+  {"query": "PROJ-431's description is a wall of text. tighten it up into AC / description / tech notes", "should_trigger": true},
+  {"query": "file a task for adding the snooze_until column read path in case-service. blocked on DBA-77", "should_trigger": true},
+  {"query": "we need to ticket the feature flag cleanup now that new-billing-flow is at 100%. web-app only", "should_trigger": true},
+  {"query": "draft me something for the backlog: migrate the export job off the single-thread executor. don't create it yet, I want to look first", "should_trigger": true},
+  {"query": "turn this code review comment into a ticket: 'ReservationSweeper publishes inside the transaction, should publish after commit'", "should_trigger": true},
+  {"query": "write acceptance criteria for the reservation TTL validation work, I'll paste them into the ticket myself", "should_trigger": true},
+  {"query": "what's the status of PROJ-412? did anyone pick it up", "should_trigger": false},
+  {"query": "move PROJ-431 to In Review and add a comment linking PR #214", "should_trigger": false},
+  {"query": "list all open tickets in PROJ assigned to me sorted by priority", "should_trigger": false},
+  {"query": "write the PR description for the dependency removal branch in billing-worker", "should_trigger": false},
+  {"query": "can you summarize the reservation expiry tech brief for the standup, like 3 bullets", "should_trigger": false},
+  {"query": "set the priority of PROJ-415 to the highest severity", "should_trigger": false},
+  {"query": "write a commit message for these changes to worker/pom.xml", "should_trigger": false},
+  {"query": "the jira mcp keeps returning 'field not found' when I set the Sprint field, what's going on", "should_trigger": false},
+  {"query": "draft a confluence page documenting the reservation lifecycle", "should_trigger": false},
+  {"query": "github issue for the open source lib: the retry decorator doesn't respect max_attempts=0. make it a good bug report", "should_trigger": false},
+  {"query": "write a runbook entry for manually releasing a stuck reservation", "should_trigger": false}
+]

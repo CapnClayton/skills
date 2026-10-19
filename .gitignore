@@ -1,0 +1,8 @@
+# Editors/OS
+.DS_Store
+__pycache__/
+.idea/
+.vscode/
+
+# Skill-creator eval workspaces
+*-workspace/

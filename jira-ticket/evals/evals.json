@@ -1,0 +1,71 @@
+{
+  "skill_name": "jira-ticket",
+  "evals": [
+    {
+      "id": 1,
+      "name": "feature-ticket-from-brief-with-conflict",
+      "prompt": "Draft the M1 ticket for the reservation expiry work from the tech brief in evals/files/reservation-ttl-brief.md. The repo is inventory-service, the epic is PROJ-400, and the schema change ticket is PROJ-402. Just show me the draft in chat, do not create anything in Jira.",
+      "expected_output": "A single ticket draft in chat. Summary carries a scope prefix and M1. Body starts with a bolded Acceptance Criteria section, then Description with the spec link and a Blocked by sentence naming the schema change ticket, then Technical Notes beginning with 'Repo: inventory-service.' and per-file bullets. The default TTL conflict between section 2 (900 seconds) and section 5 (1800 seconds) is called out as an open question, not silently resolved.",
+      "files": [
+        "evals/files/reservation-ttl-brief.md"
+      ],
+      "expectations": [
+        "The summary starts with a bracketed scope tag such as [Backend] and includes 'M1:'",
+        "The summary contains no priority marker (P0, P1, P2, Sev, Severity)",
+        "The body's first bolded section heading is Acceptance Criteria, appearing before Description and Technical Notes",
+        "A bolded Description section follows Acceptance Criteria and contains a 'Blocked by' sentence that names PROJ-402",
+        "A bolded Technical Notes section is last and its first line is 'Repo: inventory-service.'",
+        "The Acceptance Criteria bullets contain no file paths (no bullet contains a slash-separated path or a .java/.py filename)",
+        "At least one Acceptance Criteria bullet names the metric inventory.reservation_released and its tags",
+        "At least one Acceptance Criteria bullet covers two sweepers releasing the same reservation exactly once, or an equivalent idempotency check",
+        "The draft explicitly flags the 900 vs 1800 second default TTL inconsistency between the storage and API sections and asks which is correct, rather than picking one",
+        "The draft states the issue type is Task and the parent is PROJ-400",
+        "TTL is defined at its first use in the ticket body as 'TTL (time to live)' or 'time to live (TTL)'",
+        "The prose follows Simplified Technical English: no sentence exceeds 25 words, sentences name the agent in active voice (no 'is released', 'are published', 'gets rejected' constructions), and instructions in Technical Notes start with a verb",
+        "Nothing was created in Jira; no createJiraIssue call was made"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "hygiene-ticket-from-findings",
+      "prompt": "Turn the findings in evals/files/dependency-findings.md into a ticket under our hygiene epic PROJ-10. Draft it here first; I'll tell you when to file it.",
+      "expected_output": "A hygiene-shaped ticket: one intro paragraph, then Acceptance Criteria, then Technical Notes, with no Description section. The summary ends with 'in billing-worker'. Technical Notes say to leave config-core and bus-client alone and why. The RetryPolicy behavior bug is kept out of this ticket and noted as tracked separately.",
+      "files": [
+        "evals/files/dependency-findings.md"
+      ],
+      "expectations": [
+        "The summary starts with a bracketed scope tag and ends with 'in billing-worker'",
+        "The body opens with a plain intro paragraph (no heading) before the first bolded section",
+        "The body contains bolded Acceptance Criteria and Technical Notes sections and no Description section",
+        "An Acceptance Criteria bullet lists the dependency coordinates to be removed from worker/pom.xml",
+        "An Acceptance Criteria bullet requires the service to start and tests or CI to pass",
+        "An Acceptance Criteria bullet requires the minor version bump from 3.4.0 to 3.5.0",
+        "Technical Notes say to leave config-core and bus-client in place because they are loaded reflectively",
+        "Technical Notes mention that javax.annotation-api 1.3.2 remains transitively via jersey-client and that this is expected",
+        "The RetryPolicy InterruptedException bug is excluded from the acceptance criteria and described as tracked separately or to be filed on its own",
+        "The draft states Task type and parent PROJ-10",
+        "The prose follows Simplified Technical English: no sentence exceeds 25 words, sentences name the agent in active voice (no 'is released', 'are published', 'gets rejected' constructions), and instructions in Technical Notes start with a verb",
+        "Nothing was created in Jira"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "split-epic-across-repos",
+      "prompt": "We're adding a 'snooze until' timestamp to support cases. The API lives in case-service (Java) and the settings form lives in web-app. The column snooze_until DATETIME NULL has to be added by the DB team first; that request is DBA-77. Break this into tickets for epic PROJ-500 and show me the drafts.",
+      "expected_output": "Two or more atomic drafts, one per repo (case-service, web-app), each with the three sections in order. The case-service ticket is blocked by DBA-77 with a note to create a real Blocks link. The web-app ticket is blocked by the case-service ticket. No ticket spans both repos.",
+      "files": [],
+      "expectations": [
+        "At least two separate ticket drafts are produced",
+        "No single draft's Technical Notes name both case-service and web-app as its repo",
+        "Each draft's Technical Notes begin with a 'Repo:' line naming exactly one repo",
+        "Each draft's sections appear in the order Acceptance Criteria, Description, Technical Notes",
+        "The case-service draft's Description contains 'Blocked by' and names DBA-77",
+        "The web-app draft is described as blocked by the case-service ticket",
+        "The response says to create real Jira Blocks links for the dependencies, not only text",
+        "The case-service draft's Acceptance Criteria include a POST without snooze_until leaving the existing value unchanged, or an equivalent no-regression check",
+        "The web-app draft's summary uses a [Frontend] scope tag",
+        "The prose follows Simplified Technical English: no sentence exceeds 25 words, sentences name the agent in active voice (no 'is released', 'are published', 'gets rejected' constructions), and instructions in Technical Notes start with a verb"
+      ]
+    }
+  ]
+}
