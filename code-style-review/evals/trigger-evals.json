@@ -1,0 +1,85 @@
+{
+  "skill_name": "code-style-review",
+  "queries": [
+    {
+      "query": "Review my branch for style before I open the PR",
+      "should_trigger": true
+    },
+    {
+      "query": "Anything in this diff you'd flag? Comments, docstrings, that kind of thing",
+      "should_trigger": true
+    },
+    {
+      "query": "Clean up the comments on this branch",
+      "should_trigger": true
+    },
+    {
+      "query": "Check the new tests for stray comments and docstrings",
+      "should_trigger": true
+    },
+    {
+      "query": "Did I leave any ticket numbers in the code?",
+      "should_trigger": true
+    },
+    {
+      "query": "Tidy up the docstrings I added in retry.py",
+      "should_trigger": true
+    },
+    {
+      "query": "Go over my diff against develop for hygiene issues",
+      "should_trigger": true
+    },
+    {
+      "query": "Make sure the new helpers have type hints",
+      "should_trigger": true
+    },
+    {
+      "query": "Do the names in my diff make sense?",
+      "should_trigger": true
+    },
+    {
+      "query": "Lint my comments",
+      "should_trigger": true
+    },
+    {
+      "query": "Run black on the repo",
+      "should_trigger": false
+    },
+    {
+      "query": "Write a PR description for this branch",
+      "should_trigger": false
+    },
+    {
+      "query": "Review this function for correctness; I think there is an off-by-one",
+      "should_trigger": false
+    },
+    {
+      "query": "Add a docstring to the public API module",
+      "should_trigger": false
+    },
+    {
+      "query": "Refactor retry() to use a policy object",
+      "should_trigger": false
+    },
+    {
+      "query": "What does the TODO in store.py refer to?",
+      "should_trigger": false
+    },
+    {
+      "query": "Write unit tests for backoff_seconds",
+      "should_trigger": false
+    },
+    {
+      "query": "Explain what this diff changes",
+      "should_trigger": false
+    },
+    {
+      "query": "Rebase my branch onto main",
+      "should_trigger": false
+    },
+    {
+      "query": "Set up a pre-commit hook for the repo",
+      "should_trigger": false
+    }
+  ]
+}

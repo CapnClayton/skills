@@ -1,0 +1,80 @@
+{
+  "skill_name": "code-style-review",
+  "evals": [
+    {
+      "id": 1,
+      "name": "review-diff-report-only",
+      "prompt": "Here is the diff for my branch: evals/files/style-sample.diff. Review it for comment, docstring, and test hygiene and tell me what you would flag. Don't change anything.",
+      "expected_output": "A findings list grouped by file. Each finding has a line number, a rule, a quoted fragment, and a fix. It flags the PROJ-412 tombstone comment, the rationale docstring, the missing annotations, and the variable tmp in backoff_seconds, the narrative validation comment in is_retryable, the 'Postgres instead of SQLite / no Alembic' comment, the three repeated field comments and the cfg field whose comment says pool in PaymentStore, the docstring in the test file, and the standalone metric test with a suggestion to fold its assertion into test_retry_succeeds_after_one_failure. It does not flag the unchanged PROJ-301 context line. It does not flag is_retryable for annotations. No file is modified.",
+      "files": [
+        "evals/files/style-sample.diff"
+      ],
+      "expectations": [
+        "The PROJ-412 comment in payments/retry.py is flagged as a ticket key outside a TODO and/or a tombstone comment",
+        "The backoff_seconds docstring is flagged for explaining rationale ('we chose', 'because')",
+        "backoff_seconds is flagged for missing parameter and return type annotations",
+        "The variable tmp in backoff_seconds is flagged as a generic name with a rename suggested",
+        "The comment inside is_retryable is flagged for narrative validation wording with a neutral replacement or deletion suggested",
+        "is_retryable is not flagged for annotations",
+        "The PaymentStore comment mentioning SQLite and Alembic is flagged for naming tools not in use",
+        "The repeated field comments in PaymentStore __init__ are flagged as copies of one definition comment",
+        "The field cfg in PaymentStore is flagged because its name does not match the pool its comment describes",
+        "The docstring in payments/tests/test_retry.py is flagged as a comment in a test file",
+        "test_retry_records_metric is flagged as a standalone metric test and the response suggests moving its assertion into test_retry_succeeds_after_one_failure",
+        "The unchanged context line '# PROJ-301 legacy fallback' is not flagged",
+        "No finding concerns test coverage, logic, formatting, or anything other than comments, docstrings, tests, and names",
+        "Every finding names a file and a line number",
+        "No file was created or modified; the response reports only"
+      ]
+    },
+    {
+      "id": 2,
+      "name": "fix-all-new-files",
+      "prompt": "Both evals/files/retry_new.py and evals/files/test_retry_new.py are entirely new in my PR. Fix the style problems and show me the changed lines.",
+      "expected_output": "Both files are edited in place. retry_new.py loses the PROJ-412 comment and the rationale docstring, the variable tmp is renamed or removed, backoff_seconds gains annotations (attempt: int, base: float = 0.5) -> float, retry gains annotations, and the is_retryable comment is neutral or gone. test_retry_new.py loses the docstring, and the metric assertion moves into test_retry_succeeds_after_one_failure with test_retry_records_metric deleted. Behavior is unchanged. The response shows the changed lines, not full files.",
+      "files": [
+        "evals/files/retry_new.py",
+        "evals/files/test_retry_new.py"
+      ],
+      "expectations": [
+        "retry_new.py no longer contains the string PROJ-412",
+        "retry_new.py no longer contains the rationale docstring on backoff_seconds (no 'we chose' or 'because')",
+        "retry_new.py no longer uses the name tmp",
+        "backoff_seconds in retry_new.py has annotated parameters and a return type",
+        "retry in retry_new.py has annotated parameters and a return type",
+        "The is_retryable comment is removed or rewritten without a narrative clause such as 'so a typo'",
+        "The arithmetic and control flow of backoff_seconds, is_retryable, and retry are unchanged",
+        "test_retry_new.py contains no docstring or inline comment",
+        "test_retry_new.py no longer defines test_retry_records_metric",
+        "test_retry_succeeds_after_one_failure in test_retry_new.py asserts the payments.retry counter count",
+        "No line that was not flagged changed, other than import lines the new annotations require; the test functions keep their names and their pytest style",
+        "The response shows changed lines or hunks, not both files in full"
+      ]
+    },
+    {
+      "id": 3,
+      "name": "review-java-diff-report-only",
+      "prompt": "Here is the diff for my branch: evals/files/java-sample.diff. Review it for comment, docstring, test, and naming hygiene and tell me what you would flag. Don't change anything.",
+      "expected_output": "A findings list grouped by file. It treats Javadoc and the /* */ block as documentation comments. It flags the block comment with PROJ-412 at its first line, the rationale Javadoc on backoffSeconds, the variable tmp, the narrative comment in isRetryable, the class Javadoc that names SQLite and Liquibase, the Javadoc repeated on each PaymentStore field, the cfg field whose Javadoc says pool, the Javadoc on the backoffDoubles test, and the standalone recordsMetric test with a suggestion to fold its assertion into succeedsAfterOneFailure. It raises no type annotation finding, because Java has no optional annotations. It does not flag the unchanged PROJ-301 line. No file is modified.",
+      "files": [
+        "evals/files/java-sample.diff"
+      ],
+      "expectations": [
+        "The /* */ block comment at the top of RetryPolicy.java is flagged for the PROJ-412 key and/or as a tombstone comment, and the finding cites the block's first line (line 5)",
+        "The Javadoc on backoffSeconds is flagged for explaining rationale ('we chose', 'because')",
+        "The variable tmp in backoffSeconds is flagged as a generic name with a rename suggested",
+        "The comment inside isRetryable is flagged for narrative validation wording",
+        "No finding cites rule 7 or missing type annotations for any Java method",
+        "The PaymentStore class Javadoc is flagged for naming SQLite and Liquibase, tools not in use",
+        "The Javadoc repeated on each PaymentStore field is flagged as copies of one definition comment",
+        "The field cfg in PaymentStore is flagged because its name does not match the pool its Javadoc describes",
+        "The Javadoc on the backoffDoubles test is flagged as a comment in a test file",
+        "recordsMetric is flagged as a standalone metric test and the response suggests moving its assertion into succeedsAfterOneFailure",
+        "The unchanged line with '// PROJ-301 legacy fallback' is not flagged",
+        "No finding concerns test coverage, logic, formatting, or anything other than comments, docstrings, tests, and names",
+        "Every finding names a file and a line number",
+        "No file was created or modified; the response reports only"
+      ]
+    }
+  ]
+}

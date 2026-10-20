@@ -1,0 +1,99 @@
+diff --git a/src/main/java/payments/RetryPolicy.java b/src/main/java/payments/RetryPolicy.java
+index 4d2a7e1..c91b3f0 100644
+--- a/src/main/java/payments/RetryPolicy.java
++++ b/src/main/java/payments/RetryPolicy.java
+@@ -1,10 +1,29 @@
+ package payments;
+ 
+ import io.micrometer.core.instrument.MeterRegistry;
+ 
++/*
++ * Backoff policy for gateway calls.
++ * PROJ-412: replaces the legacy retry loop that was removed.
++ */
+ public final class RetryPolicy {
+ 
+     private static final int MAX_ATTEMPTS = 5; // PROJ-301 legacy fallback, see the gateway runbook
+ 
++    /**
++     * Computes the backoff for an attempt.
++     *
++     * We chose exponential backoff because the gateway team asked for it.
++     */
++    public double backoffSeconds(int attempt, double base) {
++        double tmp = base * Math.pow(2, attempt);
++        return tmp;
++    }
++
++    public boolean isRetryable(int status) {
++        // reject non-5xx so a typo in the caller cannot silently retry forever
++        return status >= 500 && status < 600;
++    }
++
+     public <T> T retry(Retryable<T> fn, MeterRegistry registry) throws Exception {
+         for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+diff --git a/src/main/java/payments/PaymentStore.java b/src/main/java/payments/PaymentStore.java
+new file mode 100644
+index 0000000..7a8b9c0
+--- /dev/null
++++ b/src/main/java/payments/PaymentStore.java
+@@ -0,0 +1,21 @@
++package payments;
++
++/**
++ * Stores payments. Backed by Postgres instead of SQLite; no Liquibase migrations.
++ */
++public final class PaymentStore {
++
++    /** The connection string. */
++    private final String dsn;
++
++    /** The timeout in seconds. */
++    private final int timeout;
++
++    /** The pool, created on connect. */
++    private Object cfg;
++
++    public PaymentStore(String dsn, int timeout) {
++        this.dsn = dsn;
++        this.timeout = timeout;
++    }
++}
+diff --git a/src/test/java/payments/RetryPolicyTest.java b/src/test/java/payments/RetryPolicyTest.java
+new file mode 100644
+index 0000000..e5f6a7b
+--- /dev/null
++++ b/src/test/java/payments/RetryPolicyTest.java
+@@ -0,0 +1,32 @@
++package payments;
++
++import static org.junit.jupiter.api.Assertions.assertEquals;
++
++import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
++import org.junit.jupiter.api.Test;
++
++class RetryPolicyTest {
++
++    private final RetryPolicy policy = new RetryPolicy();
++
++    /** Backoff should double each attempt. */
++    @Test
++    void backoffDoubles() {
++        assertEquals(1.0, policy.backoffSeconds(1, 0.5));
++        assertEquals(2.0, policy.backoffSeconds(2, 0.5));
++    }
++
++    @Test
++    void recordsMetric() throws Exception {
++        SimpleMeterRegistry registry = new SimpleMeterRegistry();
++        policy.retry(FailOnce.once(), registry);
++        assertEquals(1.0, registry.counter("payments.retry").count());
++    }
++
++    @Test
++    void succeedsAfterOneFailure() throws Exception {
++        SimpleMeterRegistry registry = new SimpleMeterRegistry();
++        String result = policy.retry(FailOnce.once(), registry);
++        assertEquals("ok", result);
++    }
++}
