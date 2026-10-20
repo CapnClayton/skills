@@ -1,0 +1,72 @@
+diff --git a/payments/retry.py b/payments/retry.py
+index 3f1c2a9..b7d4e01 100644
+--- a/payments/retry.py
++++ b/payments/retry.py
+@@ -1,8 +1,23 @@
+ import time
+ 
+ # PROJ-301 legacy fallback, see the gateway runbook
+ MAX_ATTEMPTS = 5
+ 
++# PROJ-412: removed the legacy retry loop, RetryPolicy replaces it
++def backoff_seconds(attempt, base=0.5):
++    """Compute the backoff so that we do not hammer the gateway during an outage.
++
++    We chose exponential backoff because the gateway team asked for it.
++    """
++    tmp = base * (2 ** attempt)
++    return tmp
++
++
++def is_retryable(status: int) -> bool:
++    # reject non-5xx so a typo in the caller cannot silently retry forever
++    return 500 <= status < 600
++
++
+ def retry(fn, registry):
+     for attempt in range(MAX_ATTEMPTS):
+         try:
+diff --git a/payments/store.py b/payments/store.py
+new file mode 100644
+index 0000000..9c2e5b1
+--- /dev/null
++++ b/payments/store.py
+@@ -0,0 +1,7 @@
++class PaymentStore:
++    # Backed by Postgres instead of SQLite; no Alembic migrations.
++
++    def __init__(self, dsn: str, timeout: int = 30) -> None:
++        self.dsn = dsn  # the connection string
++        self.timeout = timeout  # the timeout in seconds
++        self.cfg = None  # the pool, created on connect
+diff --git a/payments/tests/test_retry.py b/payments/tests/test_retry.py
+index 1a2b3c4..5d6e7f8 100644
+--- a/payments/tests/test_retry.py
++++ b/payments/tests/test_retry.py
+@@ -1,7 +1,26 @@
+ from payments.retry import backoff_seconds
+ from payments.retry import retry
+ from payments.testing import SimpleRegistry
+ from payments.testing import fail_once
+ 
++
++def test_backoff_doubles():
++    """Backoff should double each attempt."""
++    assert backoff_seconds(1) == 1.0
++    assert backoff_seconds(2) == 2.0
++
++
++def test_retry_records_metric():
++    registry = SimpleRegistry()
++    retry(fail_once, registry=registry)
++    assert registry.counter("payments.retry").count == 1
++
++
++def test_retry_succeeds_after_one_failure():
++    registry = SimpleRegistry()
++    result = retry(fail_once, registry=registry)
++    assert result == "ok"
++
++
+ def test_retry_gives_up_after_max_attempts():
+     registry = SimpleRegistry()
