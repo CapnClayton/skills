@@ -1,0 +1,13 @@
+{
+  "name": "capnclayton",
+  "owner": { "name": "CapnClayton" },
+  "description": "Claude Code skills by CapnClayton.",
+  "plugins": [
+    {
+      "name": "skills",
+      "source": "./",
+      "description": "Jira ticket drafting and code style review skills.",
+      "version": "0.1.0"
+    }
+  ]
+}

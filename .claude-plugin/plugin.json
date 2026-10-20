@@ -1,0 +1,6 @@
+{
+  "name": "skills",
+  "description": "Jira ticket drafting and code style review skills.",
+  "version": "0.1.0",
+  "author": { "name": "CapnClayton" }
+}
