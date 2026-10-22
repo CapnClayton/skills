@@ -34,8 +34,15 @@ active sprint without triage (for example, "under two days of effort").
 - Active sprint: JQL `project = <PROJ> AND sprint in openSprints()`.
 - Future sprints: `listJiraBoardSprints {boardId, state: "future"}`. JQL
   cannot see a sprint that has no issues yet.
+- With acli (no field-listing command): read any existing ticket with
+  `acli jira workitem view <PROJ>-1 --fields '*all' --json` and note the
+  `customfield_*` ids; sprints with
+  `acli jira board list-sprints --id <board id> --state active,future --json`.
 
 ## Create
+
+acli equivalents for this section and the ones below are in
+[acli-fallback.md](acli-fallback.md).
 
 Use `createJiraIssue` with a markdown description. Set everything in one
 call so the ticket lands ready to work:

@@ -24,6 +24,14 @@ Read it before any create or edit call. If it still holds placeholders, ask
 the user for the values or discover them with the Jira tools, then fill it
 in so the next session does not have to.
 
+The Atlassian MCP is the first choice for every Jira read and write. When
+it fails to connect, times out, or errors twice on one call, switch to
+`acli` (the Atlassian CLI) without asking and follow
+[references/acli-fallback.md](references/acli-fallback.md). It maps every
+MCP call to an acli command and covers the two differences that matter:
+acli takes ADF, not markdown (convert with `scripts/md_to_adf.py`), and
+custom fields only go in at create time.
+
 ## Summary (title)
 
 - Prefix with the team's scope tag, for example `[Backend]` or `[Frontend]`,
@@ -217,5 +225,7 @@ Before you show the draft, reread each sentence and apply the rules above.
 A sentence that resists them usually hides two ideas or a missing agent.
 
 Markdown renders through the Atlassian MCP; use `*` bullets and backticks
-for identifiers. Ticket keys do not belong in code or docs content, only
-in commit and PR titles and `TODO(KEY)` markers.
+for identifiers. acli does not render markdown: when on the acli
+fallback, draft the same markdown, then convert it with
+`scripts/md_to_adf.py` before the call. Ticket keys do not belong in code
+or docs content, only in commit and PR titles and `TODO(KEY)` markers.

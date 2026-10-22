@@ -26,12 +26,12 @@ project. Claude Code picks it up on the next session, and the skill keeps
 its short name, for example `/jira-ticket`.
 
 Each skill is self-contained: a `SKILL.md` with the instructions, optional
-`references/` the skill reads on demand, and optional `evals/` for testing
-it with the `skill-creator` skill.
+`references/` the skill reads on demand, optional `scripts/` it runs, and
+optional `evals/` for testing it with the `skill-creator` skill.
 
 ## Skills
 
 | Skill                       | Purpose                                                                                                                                                                               | Notes                                                                                           |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------|
 | [code-style-review](skills/code-style-review/) | Reviews a branch, diff, or file against ten rules for comments, docstrings, tests, and names. It reports only the lines the change added. It fixes on request. | `references/rules.md` is the plain rule list for other review tooling. Ships with evals. |
-| [jira-ticket](skills/jira-ticket/) | Drafts and files Jira tickets in a fixed shape: scoped summary, then Acceptance Criteria, Description, and Technical Notes, each with one job. Prose in Simplified Technical English. | Fill in `references/project-config.md` with your project's ids before filing. Ships with evals. |
+| [jira-ticket](skills/jira-ticket/) | Drafts and files Jira tickets in a fixed shape: scoped summary, then Acceptance Criteria, Description, and Technical Notes, each with one job. Prose in Simplified Technical English. | Fill in `references/project-config.md` with your project's ids before filing. Falls back to the `acli` CLI when the Atlassian MCP is down; `scripts/md_to_adf.py` converts the draft to ADF for it. Ships with evals. |
