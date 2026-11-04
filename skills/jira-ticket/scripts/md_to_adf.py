@@ -15,7 +15,7 @@ Supported subset (everything the skill's ticket shapes use):
 Usage:
   md_to_adf.py ticket.md > ticket.adf.json
   md_to_adf.py ticket.md --wrap-create --project PROJ --type Task \
-      --summary "[Backend] ..." --parent PROJ-12 --assignee @me \
+      --summary "[Backend] ..." --parent PROJ-12 --assignee <account id> \
       --field customfield_10007=1234 --field customfield_10004=1 \
       --label needs-decision > create.json
   cat ticket.md | md_to_adf.py - > ticket.adf.json
@@ -202,7 +202,7 @@ def main():
     ap.add_argument("--type", default="Task")
     ap.add_argument("--summary")
     ap.add_argument("--parent", help="parent key or id, e.g. PROJ-12")
-    ap.add_argument("--assignee", help="email, account id, or @me")
+    ap.add_argument("--assignee", help="account id (not @me; acli create does not resolve it)")
     ap.add_argument("--field", action="append", default=[], metavar="ID=VALUE",
                     help="custom field by raw id, e.g. customfield_10007=1234; repeatable")
     ap.add_argument("--label", action="append", default=[])
@@ -225,6 +225,13 @@ def main():
         "description": adf,
     }
     if args.assignee:
+        # acli's --from-json does not resolve the "@me" alias; Jira then silently falls
+        # back to the project's default assignee (the project lead). Require the account id.
+        if args.assignee == "@me":
+            sys.exit(
+                "--assignee @me is not resolved by `acli jira workitem create --from-json`; "
+                "pass the account id from references/project-config.md instead"
+            )
         body["assignee"] = args.assignee
     if args.label:
         body["labels"] = args.label

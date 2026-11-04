@@ -44,20 +44,20 @@ in or read credential stores yourself.
 
 ## Command map
 
-| Skill step | MCP | acli |
-|---|---|---|
-| Find active sprint | `getJiraBoardSprintData` | `acli jira board list-sprints --id <board id> --state active --json` |
-| Find future sprints | `listJiraBoardSprints` | `acli jira board list-sprints --id <board id> --state future --json` |
-| JQL search | `searchJiraIssuesUsingJql` | `acli jira workitem search --jql "..." --fields key,summary,status,<sprint field> --json` |
-| Read a ticket | `getJiraIssue` | `acli jira workitem view <PROJ>-123 --fields '*all' --json` |
-| Create | `createJiraIssue` | `acli jira workitem create --from-json create.json --json` |
-| Edit summary / description | `editJiraIssue` | `acli jira workitem edit --key <PROJ>-123 --summary "..." --description-file ticket.adf.json --yes` |
-| Edit labels | `editJiraIssue` | `acli jira workitem edit --key <PROJ>-123 --labels needs-decision --yes` (or `--remove-labels`) |
-| Assign | `editJiraIssue` | `acli jira workitem assign --key <PROJ>-123 --assignee @me --yes` |
-| Transition | `transitionJiraIssue` | `acli jira workitem transition --key <PROJ>-123 --status "In Progress" --yes` |
-| Comment | `addCommentToJiraIssue` | `acli jira workitem comment create --key <PROJ>-123 --body-file comment.adf.json` |
-| Blocks link | `createIssueLink` | `acli jira workitem link create --out <PROJ>-401 --in <PROJ>-402 --type Blocks --yes` |
-| Link types | n/a | `acli jira workitem link type` |
+| Skill step                 | MCP                        | acli                                                                                                              |
+|----------------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------|
+| Find active sprint         | `getJiraBoardSprintData`   | `acli jira board list-sprints --id <board id> --state active --json`                                              |
+| Find future sprints        | `listJiraBoardSprints`     | `acli jira board list-sprints --id <board id> --state future --json`                                              |
+| JQL search                 | `searchJiraIssuesUsingJql` | `acli jira workitem search --jql "..." --json` (search allows only its default fields; custom fields need `view`) |
+| Read a ticket              | `getJiraIssue`             | `acli jira workitem view <PROJ>-123 --fields '*all' --json`                                                       |
+| Create                     | `createJiraIssue`          | `acli jira workitem create --from-json create.json --json`                                                        |
+| Edit summary / description | `editJiraIssue`            | `acli jira workitem edit --key <PROJ>-123 --summary "..." --description-file ticket.adf.json --yes`               |
+| Edit labels                | `editJiraIssue`            | `acli jira workitem edit --key <PROJ>-123 --labels needs-decision --yes` (or `--remove-labels`)                   |
+| Assign                     | `editJiraIssue`            | `acli jira workitem assign --key <PROJ>-123 --assignee @me --yes`                                                 |
+| Transition                 | `transitionJiraIssue`      | `acli jira workitem transition --key <PROJ>-123 --status "In Progress" --yes`                                     |
+| Comment                    | `addCommentToJiraIssue`    | `acli jira workitem comment create --key <PROJ>-123 --body-file comment.adf.json`                                 |
+| Blocks link                | `createIssueLink`          | `acli jira workitem link create --out <PROJ>-401 --in <PROJ>-402 --type Blocks --yes`                             |
+| Link types                 | n/a                        | `acli jira workitem link type`                                                                                    |
 
 Transitions take the target status name, not the transition id. Links
 take the outward description: `--out A --in B --type Blocks` means
@@ -75,7 +75,7 @@ python3 <skill dir>/scripts/md_to_adf.py ticket.md \
   --project <PROJ> \
   --summary "[Backend] ..." \
   --parent <PROJ-NN> \
-  --assignee @me \
+  --assignee <account id> \
   --field <sprint field>=<sprint id> \
   --label needs-decision \        # only when a decision is open
   > create.json
@@ -88,6 +88,12 @@ points or any other site-specific field go in the same way.
 `summary`, ADF `description`, `assignee`, `labels`, `parentIssueId`, and
 `additionalAttributes` with the custom fields. Read the key from the JSON
 response.
+
+**Assignee.** acli's `--from-json` does not resolve the `@me` alias (only
+the `--assignee` flag on `workitem assign` does). Pass the account id from
+[project-config.md](project-config.md), instead. Confirm the assignee with the view below
+after every create, and fix a wrong one with 
+`acli jira workitem assign --key <PROJ>-123 --assignee @me --yes`.
 
 If `parentIssueId` rejects the key, look up the numeric id with
 `acli jira workitem view <PROJ-NN> --fields id --json` and pass that.
